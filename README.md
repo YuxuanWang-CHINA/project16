@@ -1,2 +1,2 @@
 # project16
-基于node,js的api.
+基于node.js的api.
