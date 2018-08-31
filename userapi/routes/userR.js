@@ -5,27 +5,32 @@ var bodyParser = require('body-parser');
 var User_d = require('../database/userD');
 var User_doing = new User_d();
 
+var status = 0;
+var perro = null;
+
 user_router.use(bodyParser.json());
 user_router.route('/')
     .all(
         function(req, res, next)
         {
-            //console.log('start');
+            status = 0;
+            perro = null;
             next();
         }
     )
     .get(
         function(req, res, next)
         {
-            //console.log('enterget');
             User_doing.userGet(
                 function(docs)
                 {
-                    //console.log('callbackok');
                     res.set('Connection', 'close');
-                    res.set('Content-Type', 'application/json');
-                    res.send(JSON.stringify(docs));
+                    res.json(docs);
                     next();
+                },
+                function(erro)
+                {
+                    allEcallback(erro, next);
                 }
             );
         }
@@ -34,23 +39,33 @@ user_router.route('/')
         function(req, res, next)
         {
             var Password_hash = require('../something/passwordS');
-            Password_hash.createPassword(req.body.password, 
-            function(hash)
-            {
-                req.body.password = hash;
-                next();
-            }
-        );
+            Password_hash.createPassword(
+                req.body.password, 
+                function(hash)
+                {
+                    req.body.password = hash;
+                    next();
+                },
+                function(erro)
+                {
+                    allEcallback(erro, next);
+                }
+            );
         }
     )
     .post(
         function(req, res, next)
         {
-            User_doing.userPost(req.body,
+            User_doing.userPost(
+                req.body,
                 function()
                 {
-                    res.send('ok');
+                    res.json({status: 0});
                     next();
+                },
+                function(erro)
+                {
+                    allEcallback(erro, next);
                 }
             );
         }
@@ -61,8 +76,12 @@ user_router.route('/')
             User_doing.userDelete(req.body,
                 function()
                 {
-                    res.send('OKK');
+                    res.json({status: 0});
                     next();
+                },
+                function(erro)
+                {
+                    allEcallback(erro, next);
                 }
             )
         }
@@ -70,9 +89,19 @@ user_router.route('/')
     .all(
         function(req, res)
         {
-            //res.end();
-            //console.log('end');
+            if(status == 1)
+            {
+                res.json({status: 1, errors: perro});
+            }
         }
     );
+
+function allEcallback(erro, next)
+{
+    console.log(erro);
+    status = 1;
+    perro = erro;
+    next();
+}
 
 module.exports = user_router;

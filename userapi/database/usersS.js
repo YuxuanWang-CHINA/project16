@@ -7,6 +7,7 @@ var users_schema = new Schema(
         password: String
     },
     {
+        collection: 'users',
         versionKey: false
     }
 );

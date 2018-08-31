@@ -1,13 +1,14 @@
 var bcrypt = require('bcrypt');
 const saltRounds = 12;
 
-function createPassword(myPlaintextPassword, rcallback)
+function createPassword(myPlaintextPassword, rcallback, ecallback)
 {
     bcrypt.hash(myPlaintextPassword, saltRounds).then(
         function(hash)
         {
             rcallback(hash);
-        }
+        },
+        ecallback
     );
 };
 

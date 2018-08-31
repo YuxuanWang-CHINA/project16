@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var database_set = require('./database_config');
+var database_set = require('../../config/database_config');
 var Users_model = require('./usersS');
 
 function LoginDo()
