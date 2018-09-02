@@ -4,21 +4,23 @@ var Users_model = require('./usersS');
 
 function LoginDo()
 {
-    this.loginCheck = function(requ, rcallback)
+    this.loginCheck = function(requ, rcallback, ecallback)
     {
-        mongoose.connect(database_set.dburl,{ useNewUrlParser: true });
-        var db = mongoose.connection;
+        mongoose.connect(database_set.dburl,{ useNewUrlParser: true }).then(
+            function()
+            {
+                var db = mongoose.connection;
 
-        Users_model.findOne({ username: requ.username }).select('password').exec().then(
-            function(docs)
-            {
-                rcallback(docs);
-                db.close();
+                Users_model.findOne({ username: requ.username }).select('password').exec().then(
+                    function(docs)
+                    {
+                        rcallback(docs);
+                        db.close();
+                    },
+                    ecallback
+                );        
             },
-            function(erro)
-            {
-                console.log(erro);
-            }
+            ecallback
         );
     }
 };

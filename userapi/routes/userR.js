@@ -2,6 +2,9 @@ var express = require('express');
 var user_router = express.Router();
 var bodyParser = require('body-parser');
 
+var Rollbar = require('rollbar');
+var rollbar = new Rollbar('2d36ebca20e64bb2beed55bc7a20995c');
+
 var User_d = require('../database/userD');
 var User_doing = new User_d();
 
@@ -38,7 +41,7 @@ user_router.route('/')
     .post(
         function(req, res, next)
         {
-            var Password_hash = require('../something/passwordS');
+            var Password_hash = require('../something/passwordST');
             Password_hash.createPassword(
                 req.body.password, 
                 function(hash)
@@ -98,6 +101,7 @@ user_router.route('/')
 
 function allEcallback(erro, next)
 {
+    rollbar.log(erro);
     console.log(erro);
     status = 1;
     perro = erro;
